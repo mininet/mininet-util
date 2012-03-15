@@ -33,6 +33,18 @@ parser.add_argument('--labels',
                     nargs="+",
                     dest="labels")
 
+parser.add_argument('--xlabel',
+                    help="Custom label for x-axis",
+                    required=False,
+                    default=None,
+                    dest="xlabel")
+
+parser.add_argument('--ylabel',
+                    help="Custom label for y-axis",
+                    required=False,
+                    default=None,
+                    dest="ylabel")
+
 parser.add_argument('-i',
                     help="Interfaces to plot (regex)",
                     default=".*",
@@ -122,7 +134,9 @@ plt.title("TX rates")
 if args.rx:
     plt.title("RX rates")
 
-if args.normalise:
+if args.ylabel:
+    plt.ylabel(args.ylabel)
+elif args.normalise:
     plt.ylabel("Normalized BW")
 else:
     plt.ylabel("Mbps")
@@ -136,7 +150,10 @@ if args.summarise:
     plt.xticks(range(1, 1+len(args.files)), args.labels)
 
 if not args.summarise:
-    plt.xlabel("Time")
+    if args.xlabel:
+        plt.xlabel(args.xlabel)
+    else:
+        plt.xlabel("Time")
     if args.legend:
         plt.legend(args.legend)
 
