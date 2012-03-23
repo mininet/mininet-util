@@ -58,7 +58,7 @@ parser.add_argument('--rx',
 
 parser.add_argument('--maxy',
                     help="Max mbps on y-axis..",
-                    default=1000,
+                    default=100,
                     action="store",
                     dest="maxy")
 
