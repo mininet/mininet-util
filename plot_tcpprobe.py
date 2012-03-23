@@ -6,6 +6,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-p', '--port', dest="port", default='5001')
 parser.add_argument('-f', dest="files", nargs='+', required=True)
 parser.add_argument('-o', '--out', dest="out", default=None)
+parser.add_argument('-H', '--histogram', dest="histogram",
+                    help="Plot histogram of sum(cwnd_i)",
+                    action="store_true",
+                    default=False)
 
 args = parser.parse_args()
 
@@ -57,13 +61,15 @@ cwnd_time = []
 
 min_total_cwnd = 10**10
 max_total_cwnd = 0
-interested = []
+totalcwnds = []
 
 m.rc('figure', figsize=(16, 6))
 fig = plt.figure()
+plots = 1
+if args.histogram:
+    plots = 2
 
-axPlot = fig.add_subplot(1, 2, 1)
-axHist = fig.add_subplot(1, 2, 2)
+axPlot = fig.add_subplot(1, plots, 1)
 plot_cwnds(axPlot)
 
 for (t,p,c) in events:
@@ -72,26 +78,22 @@ for (t,p,c) in events:
     total_cwnd += c
     cwnd_time.append((t, total_cwnd))
     added[p] = c
-    if t > 20:
-        interested.append(total_cwnd)
-        min_total_cwnd = min(min_total_cwnd, total_cwnd)
-        max_total_cwnd = max(max_total_cwnd, total_cwnd)
-
-axPlot.axhline(y=min_total_cwnd, ls='--')
-axPlot.axhline(y=max_total_cwnd, ls='--')
-axPlot.text(10, min_total_cwnd - 20, "min total = %.2fKB" % min_total_cwnd)
-axPlot.text(10, max_total_cwnd + 10, "max total = %.2fKB" % max_total_cwnd)
+    totalcwnds.append(total_cwnd)
 
 axPlot.plot(first(cwnd_time), second(cwnd_time), lw=2, label="$\sum_i W_i$")
 axPlot.grid(True)
 axPlot.legend()
 axPlot.set_xlabel("seconds")
 axPlot.set_ylabel("cwnd KB")
+axPlot.set_title("TCP congestion window (cwnd) timeseries")
 
-n, bins, patches = axHist.hist(interested, 50, normed=1, facecolor='green', alpha=0.75)
+if args.histogram:
+    axHist = fig.add_subplot(1, 2, 2)
+    n, bins, patches = axHist.hist(totalcwnds, 50, normed=1, facecolor='green', alpha=0.75)
 
-axHist.set_xlabel("bins (KB)")
-axHist.set_ylabel("Fraction")
+    axHist.set_xlabel("bins (KB)")
+    axHist.set_ylabel("Fraction")
+    axHist.set_title("Histogram of sum(cwnd_i)")
 
 if args.out:
     print 'saving to', args.out
