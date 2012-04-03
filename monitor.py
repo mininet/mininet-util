@@ -22,7 +22,9 @@ def monitor_qlen(iface, interval_sec = 0.01, fname='%s/qlen.txt' % default_dir):
     #open('qlen.txt', 'w').write('\n'.join(ret))
     return
 
-def monitor_count(ipt_args="--src 10.0.0.0/8", interval_sec=0.01, fname='%s/bytes_sent.txt' % default_dir, chain="OUTPUT"):
+def monitor_count(ipt_args="--src 10.0.0.0/8",
+                  interval_sec=0.01, fname='%s/bytes_sent.txt'
+                  % default_dir, chain="OUTPUT"):
     cmd = "iptables -I %(chain)s 1 %(filter)s -j RETURN" % {
         "filter": ipt_args,
         "chain": chain,
@@ -44,9 +46,11 @@ def monitor_count(ipt_args="--src 10.0.0.0/8", interval_sec=0.01, fname='%s/byte
         sleep(interval_sec)
     return
 
-def monitor_devs(dev_pattern='^sw', fname="%s/bytes_sent.txt" % default_dir, interval_sec=0.01):
-    """Aggregates (sums) all txed bytes and rate (in Mbps) from devices whose name
-    matches @dev_pattern and writes to @fname"""
+def monitor_devs(dev_pattern='^s', fname="%s/bytes_sent.txt" %
+                 default_dir, interval_sec=0.01):
+
+    """Aggregates (sums) all txed bytes and rate (in Mbps) from
+       devices whose name matches @dev_pattern and writes to @fname"""
     pat = re.compile(dev_pattern)
     spaces = re.compile('\s+')
     open(fname, 'w').write('')
@@ -62,18 +66,22 @@ def monitor_devs(dev_pattern='^sw', fname="%s/bytes_sent.txt" % default_dir, int
                 tx_bytes = int(line[9])
                 total += tx_bytes - prev_tx.get(iface, tx_bytes)
                 prev_tx[iface] = tx_bytes
-        open(fname, 'a').write(','.join([t, str(total * 8 / interval_sec / 1e6), str(total)]) + "\n")
+        open(fname, 'a').write(','.join([t,
+             str(total * 8 / interval_sec / 1e6), str(total)]) + "\n")
         sleep(interval_sec)
     return
 
 def monitor_devs_ng(fname="%s/txrate.txt" % default_dir, interval_sec=0.01):
     """Uses bwm-ng tool to collect iface tx rate stats.  Very reliable."""
-    cmd = "sleep 1; bwm-ng -t %s -o csv -u bits -T rate -C ',' > %s" % (interval_sec * 1000, fname)
+    cmd = ("sleep 1; bwm-ng -t %s -o csv "
+           "-u bits -T rate -C ',' > %s" %
+           (interval_sec * 1000, fname))
     Popen(cmd, shell=True).wait()
 
 def monitor_cpu(fname="%s/cpu.txt" % default_dir, container=None):
     cmd = "(top -b -p 1 -d 1 | grep --line-buffered \"^Cpu\") > %s" % fname
     if container is not None:
-        cmd = "(top -b -p 1 -d 1 | grep --line-buffered \\\"^Cpu\\\") > %s" % fname
+        cmd = ("(top -b -p 1 -d 1 | "
+               "grep --line-buffered \\\"^Cpu\\\") > %s" % fname)
         cmd = "lxc-execute -n %s -- bash -c \"%s\"" % (container, cmd)
     Popen(cmd, shell=True).wait()
