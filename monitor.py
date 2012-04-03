@@ -78,10 +78,11 @@ def monitor_devs_ng(fname="%s/txrate.txt" % default_dir, interval_sec=0.01):
            (interval_sec * 1000, fname))
     Popen(cmd, shell=True).wait()
 
-def monitor_cpu(fname="%s/cpu.txt" % default_dir, container=None):
+def monitor_cpu(fname="%s/cpu.txt" % default_dir):
     cmd = "(top -b -p 1 -d 1 | grep --line-buffered \"^Cpu\") > %s" % fname
-    if container is not None:
-        cmd = ("(top -b -p 1 -d 1 | "
-               "grep --line-buffered \\\"^Cpu\\\") > %s" % fname)
-        cmd = "lxc-execute -n %s -- bash -c \"%s\"" % (container, cmd)
+    # BL: Disabling until we reinstantiate attachment using setns.
+    #if container is not None:
+    #    cmd = ("(top -b -p 1 -d 1 | "
+    #           "grep --line-buffered \\\"^Cpu\\\") > %s" % fname)
+    #    cmd = "lxc-execute -n %s -- bash -c \"%s\"" % (container, cmd)
     Popen(cmd, shell=True).wait()
