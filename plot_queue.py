@@ -30,6 +30,12 @@ parser.add_argument('-s', '--summarise',
                     dest="summarise",
                     action="store_true")
 
+parser.add_argument('--cdf',
+                    help="Plot CDF of queue timeseries (first 10 and last 10 values are ignored)",
+                    default=False,
+                    dest="cdf",
+                    action="store_true")
+
 parser.add_argument('--labels',
                     help="Labels for x-axis if summarising; defaults to file names",
                     required=False,
@@ -48,7 +54,7 @@ for f in args.files:
     start_time = xaxis[0]
     xaxis = map(lambda x: x - start_time, xaxis)
     qlens = map(float, col(1, data))
-    if args.summarise:
+    if args.summarise or args.cdf:
         to_plot.append(qlens[10:-10])
     else:
         plt.plot(xaxis, qlens)
@@ -60,6 +66,12 @@ yaxis = range(0, 1101, 50)
 ylabels = map(lambda y: str(y) if y%100==0 else '', yaxis)
 plt.yticks(yaxis, ylabels)
 plt.ylim((0,1100))
+
+def get_style(i):
+    if i == 0:
+        return {'color': 'red'}
+    else:
+        return {'color': 'black', 'ls': '-.'}
 
 if args.summarise:
     plt.xlabel("Link Rates")
@@ -78,8 +90,16 @@ if args.summarise:
         plt.annotate(s, (x,y+1), xycoords='data',
                 xytext=offset, textcoords='offset points',
                 arrowprops=dict(arrowstyle="->"))
-
-if not args.summarise:
+elif args.cdf:
+    for i,data in enumerate(to_plot):
+        xs, ys = cdf(data)
+        plt.plot(xs, ys, label=args.legend[i], lw=2, **get_style(i))
+        plt.ylabel("Fraction")
+        plt.xlabel("Packets")
+        plt.ylim((0, 1.0))
+        plt.legend(args.legend, loc="upper left")
+        plt.title("")
+else:
     plt.xlabel("Seconds")
     if args.legend:
         plt.legend(args.legend)
