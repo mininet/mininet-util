@@ -12,6 +12,20 @@ parser.add_argument('--files', '-f',
                     nargs='+',
                     dest="files")
 
+parser.add_argument('--maxy',
+                    help="Max mbps on y-axis..",
+		    type=int,
+                    default=1000,
+                    action="store",
+                    dest="maxy")
+
+parser.add_argument('--miny',
+                    help="Min mbps on y-axis..",
+		    type=int,
+                    default=0,
+                    action="store",
+                    dest="miny")
+
 parser.add_argument('--legend', '-l',
                     help="Legend to use if there are multiple plots.  File names used as default.",
                     action="store",
@@ -62,10 +76,11 @@ for f in args.files:
 plt.title("Queue sizes")
 plt.ylabel("Packets")
 plt.grid()
-yaxis = range(0, 1101, 50)
-ylabels = map(lambda y: str(y) if y%100==0 else '', yaxis)
-plt.yticks(yaxis, ylabels)
-plt.ylim((0,1100))
+#yaxis = range(0, 1101, 50)
+#ylabels = map(lambda y: str(y) if y%100==0 else '', yaxis)
+#plt.yticks(yaxis, ylabels)
+#plt.ylim((0,1100))
+plt.ylim((args.miny,args.maxy))
 
 def get_style(i):
     if i == 0:
