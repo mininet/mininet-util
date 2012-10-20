@@ -44,3 +44,7 @@ rcParams['figure.subplot.right'] = DEF_AXIS_RIGHT
 rcParams['lines.linewidth'] = 2
 rcParams['grid.color'] = COLOR_LIGHTGRAY
 rcParams['grid.linewidth'] = 0.6
+rcParams['ps.useafm'] = True
+rcParams['pdf.use14corefonts'] = True
+#rcParams['text.usetex'] = True
+
