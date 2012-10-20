@@ -3,6 +3,7 @@ Plot queue occupancy over time
 '''
 
 from helper import *
+import plot_defaults
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--files', '-f',
@@ -62,7 +63,13 @@ if args.labels is None:
     args.labels = args.files
 
 to_plot=[]
-for f in args.files:
+def get_style(i):
+    if i == 0:
+        return {'color': 'red'}
+    else:
+        return {'color': 'black', 'ls': '-.'}
+
+for i, f in enumerate(args.files):
     data = read_list(f)
     xaxis = map(float, col(0, data))
     start_time = xaxis[0]
@@ -71,22 +78,16 @@ for f in args.files:
     if args.summarise or args.cdf:
         to_plot.append(qlens[10:-10])
     else:
-        plt.plot(xaxis, qlens)
+        plt.plot(xaxis, qlens, label=args.legend[i], lw=2, **get_style(i))
 
 plt.title("Queue sizes")
 plt.ylabel("Packets")
-plt.grid()
+plt.grid(True)
 #yaxis = range(0, 1101, 50)
 #ylabels = map(lambda y: str(y) if y%100==0 else '', yaxis)
 #plt.yticks(yaxis, ylabels)
 #plt.ylim((0,1100))
 plt.ylim((args.miny,args.maxy))
-
-def get_style(i):
-    if i == 0:
-        return {'color': 'red'}
-    else:
-        return {'color': 'black', 'ls': '-.'}
 
 if args.summarise:
     plt.xlabel("Link Rates")
@@ -107,7 +108,7 @@ if args.summarise:
                 arrowprops=dict(arrowstyle="->"))
 elif args.cdf:
     for i,data in enumerate(to_plot):
-        xs, ys = cdf(data)
+        xs, ys = cdf(map(int, data))
         plt.plot(xs, ys, label=args.legend[i], lw=2, **get_style(i))
         plt.ylabel("Fraction")
         plt.xlabel("Packets")
@@ -117,7 +118,7 @@ elif args.cdf:
 else:
     plt.xlabel("Seconds")
     if args.legend:
-        plt.legend(args.legend)
+        plt.legend(args.legend, loc="upper left")
     else:
         plt.legend(args.files)
 
