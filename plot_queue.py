@@ -1,9 +1,14 @@
 '''
 Plot queue occupancy over time
 '''
-
 from helper import *
 import plot_defaults
+
+plot_defaults.quarter_size()
+
+from matplotlib.ticker import MaxNLocator
+from pylab import figure
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--files', '-f',
@@ -69,18 +74,29 @@ def get_style(i):
     else:
         return {'color': 'black', 'ls': '-.'}
 
+print args.files
+fig = figure()
+ax = fig.add_subplot(111)
 for i, f in enumerate(args.files):
     data = read_list(f)
     xaxis = map(float, col(0, data))
     start_time = xaxis[0]
     xaxis = map(lambda x: x - start_time, xaxis)
     qlens = map(float, col(1, data))
+
     if args.summarise or args.cdf:
         to_plot.append(qlens[10:-10])
     else:
-        plt.plot(xaxis, qlens, label=args.legend[i], lw=2, **get_style(i))
+        ax.plot(xaxis, qlens, label=args.legend[i], lw=2, **get_style(i))
 
-plt.title("Queue sizes")
+    ax.xaxis.set_major_locator(MaxNLocator(4))
+
+
+
+
+
+#plt.title("Queue sizes")
+plt.title("")
 plt.ylabel("Packets")
 plt.grid(True)
 #yaxis = range(0, 1101, 50)
@@ -107,14 +123,17 @@ if args.summarise:
                 xytext=offset, textcoords='offset points',
                 arrowprops=dict(arrowstyle="->"))
 elif args.cdf:
+    fig = figure()
+    ax = fig.add_subplot(111)
     for i,data in enumerate(to_plot):
         xs, ys = cdf(map(int, data))
-        plt.plot(xs, ys, label=args.legend[i], lw=2, **get_style(i))
+        ax.plot(xs, ys, label=args.legend[i], lw=2, **get_style(i))
         plt.ylabel("Fraction")
         plt.xlabel("Packets")
         plt.ylim((0, 1.0))
         plt.legend(args.legend, loc="upper left")
         plt.title("")
+        ax.xaxis.set_major_locator(MaxNLocator(4))
 else:
     plt.xlabel("Seconds")
     if args.legend:

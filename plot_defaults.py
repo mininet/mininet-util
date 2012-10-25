@@ -38,7 +38,8 @@ rcParams['xtick.labelsize'] = TICK_LABELSIZE
 rcParams['ytick.labelsize'] = TICK_LABELSIZE
 rcParams['xtick.major.pad'] = 4
 rcParams['ytick.major.pad'] = 6
-rcParams['figure.subplot.bottom'] = DEF_AXIS_LEFT
+rcParams['figure.subplot.top'] = DEF_AXIS_TOP
+rcParams['figure.subplot.bottom'] = DEF_AXIS_BOTTOM
 rcParams['figure.subplot.left'] = DEF_AXIS_LEFT
 rcParams['figure.subplot.right'] = DEF_AXIS_RIGHT
 rcParams['lines.linewidth'] = 2
@@ -48,3 +49,28 @@ rcParams['ps.useafm'] = True
 rcParams['pdf.use14corefonts'] = True
 #rcParams['text.usetex'] = True
 
+def quarter_size():
+    QUARTER_AXIS_LEFT = 0.25
+    QUARTER_AXIS_RIGHT = 0.92
+    QUARTER_AXIS_BOTTOM = 0.20
+    QUARTER_AXIS_TOP = 0.95
+    QUARTER_AXIS_WIDTH = QUARTER_AXIS_RIGHT - QUARTER_AXIS_LEFT
+    QUARTER_AXIS_HEIGHT = QUARTER_AXIS_TOP - QUARTER_AXIS_BOTTOM
+
+    QUARTER_AXES_LABELSIZE = 40
+    QUARTER_TICK_LABELSIZE = 40
+    QUARTER_TEXT_LABELSIZE = 40
+
+    rc('axes', **{'labelsize' : 'xx-large',
+                  'titlesize' : 'xx-large',
+                  'grid' : True})
+    rc('legend', **{'fontsize': 'xx-large'})
+    rcParams['axes.labelsize'] = QUARTER_AXES_LABELSIZE
+    rcParams['xtick.labelsize'] = QUARTER_TICK_LABELSIZE
+    rcParams['ytick.labelsize'] = QUARTER_TICK_LABELSIZE
+    rcParams['xtick.major.pad'] = 16
+    rcParams['ytick.major.pad'] = 20
+    rcParams['figure.subplot.top'] = QUARTER_AXIS_TOP
+    rcParams['figure.subplot.bottom'] = QUARTER_AXIS_BOTTOM
+    rcParams['figure.subplot.left'] = QUARTER_AXIS_LEFT
+    rcParams['figure.subplot.right'] = QUARTER_AXIS_RIGHT
