@@ -63,6 +63,11 @@ parser.add_argument('--labels',
                     nargs="+",
                     dest="labels")
 
+parser.add_argument('--every',
+                    help="If the plot has a lot of data points, plot one every EVERY (x,y) point (default 1).",
+                    default=1,
+                    type=int)
+
 args = parser.parse_args()
 if args.labels is None:
     args.labels = args.files
@@ -92,6 +97,8 @@ for i, f in enumerate(args.files):
     if args.summarise or args.cdf:
         to_plot.append(qlens[10:-10])
     else:
+        xaxis = xaxis[::args.every]
+        qlens = qlens[::args.every]
         ax.plot(xaxis, qlens, label=args.legend[i], lw=2, **get_style(i))
 
     ax.xaxis.set_major_locator(MaxNLocator(4))
