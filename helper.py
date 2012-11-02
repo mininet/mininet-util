@@ -13,6 +13,7 @@ else:
 import matplotlib.pyplot as plt
 import argparse
 import math
+import termcolor as T
 
 def read_list(fname, delim=','):
     lines = open(fname).xreadlines()
